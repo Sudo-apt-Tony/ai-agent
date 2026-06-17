@@ -15,4 +15,4 @@ result_bin = get_file_content("calculator", "/bin/cat")
 print(f"/bin/cat result: \n\t{result_bin}\n")
 
 result_dne = get_file_content("calculator", "pkg/does_not_exist.py")
-print(f"pkg/does_not_exist.py result:\n\t{result_dne}\n")
+print(f"pkg/does_not_exist.py result:\n\t{result_dne}\n")  # pyright: ignore[reportUndefinedVariable, reportUnusedExpression]
