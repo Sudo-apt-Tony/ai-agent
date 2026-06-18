@@ -1,3 +1,9 @@
+"""
+Developer: Anthony Smyth
+Course: Boot.dev AI Agent Project - Backend Development Learning Path
+2026
+"""
+
 import argparse
 import os
 
