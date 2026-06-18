@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import errors, types
 
+from call_function import available_functions
+from prompts import system_prompt
+
 
 def main():
     load_dotenv()
@@ -27,12 +30,20 @@ def main():
     ]
 
     model = "gemini-2.5-flash"
-    prompt = messages
 
     try:
-        response = client.models.generate_content(model=model, contents=prompt)
+        response = client.models.generate_content(
+            model=model,
+            contents=messages,
+            config=types.GenerateContentConfig(
+                tools=[available_functions],
+                system_instruction=system_prompt,
+                temperature=0,
+            ),
+        )
         reply = response.text
         usg_md = response.usage_metadata
+        fc = response.function_calls
     except errors.APIError as e:
         print(f"Model is busy or returned an error: {e}")
         return
@@ -45,6 +56,9 @@ def main():
         print(f"User prompt: {args.user_prompt}")
         print(f"Prompt tokens: {usg_md.prompt_token_count}")
         print(f"Response tokens: {usg_md.candidates_token_count}")
+    if fc:
+        for call in fc:
+            print(f"Calling function: {call.name}({call.args})")
     print(reply)
 
 
