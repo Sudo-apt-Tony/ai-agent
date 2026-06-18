@@ -14,10 +14,12 @@ schema_run_python_file = types.FunctionDeclaration(
                 description="Path inside working directory to file to be parsed.",
             ),
             "args": types.Schema(
-                type=types.Type.STRING,
+                type=types.Type.ARRAY,
+                items=types.Schema(type=types.Type.STRING),
                 description="List of runtime arguments to pass to the given python file.",
             ),
         },
+        required=["file_path"],
     ),
 )
 

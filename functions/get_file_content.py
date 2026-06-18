@@ -15,6 +15,7 @@ schema_get_file_content = types.FunctionDeclaration(
                 description="Path inside working directory to file to be parsed.",
             ),
         },
+        required=["file_path"],
     ),
 )
 
