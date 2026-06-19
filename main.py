@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import errors, types
 
-from call_function import available_functions
+from call_function import available_functions, call_function
 from prompts import system_prompt
 
 
@@ -49,7 +49,7 @@ def main():
         )
         reply = response.text
         usg_md = response.usage_metadata
-        fc = response.function_calls
+        function_call = response.function_calls
     except errors.APIError as e:
         print(f"Model is busy or returned an error: {e}")
         return
@@ -62,9 +62,24 @@ def main():
         print(f"User prompt: {args.user_prompt}")
         print(f"Prompt tokens: {usg_md.prompt_token_count}")
         print(f"Response tokens: {usg_md.candidates_token_count}")
-    if fc:
-        for call in fc:
-            print(f"Calling function: {call.name}({call.args})")
+    function_call_result = []
+    if function_call:
+        for call in function_call:
+            function_call_result.append(call_function(call))
+
+    function_results = []
+    for i in function_call_result:
+        if not i.parts:
+            raise Exception("Function call result does not contain any parts.")
+        function_response = i.parts[0].function_response
+        if not function_response:
+            raise Exception("Function Response object is type None at parts[0].")
+        function_response_info = function_response.response
+        if not function_response_info:
+            raise Exception("Response field None in function response")
+        function_results.append(i.parts[0])
+        if args.verbose:
+            print(f"-> {i.parts[0].function_response.response}")
     print(reply)
 
 
